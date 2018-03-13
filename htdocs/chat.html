@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Angry Itchat</title>
+	<meta charset="utf-8" />
+	<script src="js/chat.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/chat.css" />
+</head>
+
+
+<body onload="updateChatroom()">
+
+
+<div id="BS">
+	<div class="BS-T">
+		<div class="BS-Title">
+			<img class="logo" src="images/logo.JPG" width="50px" height="50px" alt="logo" />
+			<a href="#" class="logout" onclick="logoutHandler();">Logout</a>
+		</div>
+	</div>
+
+
+	<div class="BS-box">
+		<div class="MBContent">
+			<div class="MTitle">
+				<h2>WeChat Robot</h2>
+				<div style="position:relative; float:right;"></div>
+			</div>
+
+			<div class="Info">
+				<div id="chatroomInfo"></div>
+				<p id="robotInfo"></p>
+				<p id="friendInfo"></p>
+			</div>
+
+			<div class="MLbox">
+				<div class="MLbox-LB">
+					<li>
+						<a href="#" id="autoReplyButton" class="button" onclick="autoReply();">Start Robot</a>
+					</li>
+
+					<li>
+						<a href="#" id="updateButton" class="button" onclick="updateHandler();">Update List</a>
+					</li>
+
+					<li>
+						<a href="#" id="addButton" class="button" onclick="addFriendsHandler();">Add Friends</a>
+					</li>
+				</div>
+
+				<div class="MLbox-BC">
+					<div class="MOM-bt">
+						<span id="currentTitle" class="MOM-lbt">
+							Chatroom List
+						</span>
+					</div>
+					<div class="divSearchResult">
+						<ul id="chatrooms">
+
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+
+
+</body>
+</html>
