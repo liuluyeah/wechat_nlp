@@ -159,6 +159,9 @@
         // 使用刚指定的配置项和数据显示图表。
         myChart.setOption(option);
 	}
+	function recallHandler(){
+	 window.location.href="recall.html";
+    }
 	</script>
 	<link rel="stylesheet" type="text/css" href="css/chat.css" />
 </head>
@@ -180,12 +183,12 @@
 				<div style="position:relative; float:right;"></div>
 			</div>
 
-			<div class="Info" style="display: none">
+			<!--<div class="Info" style="display: none">-->
 				<div id="chatroomInfo" style="display: none"></div>
 				<p id="robotInfo"></p>
-				<!--<p id="friendInfo"></p>-->
-				<ul id="friendInfo" >
-				<ul>
+				<p></p>
+				<!--<ul id="friendInfo" >-->
+				<!--<ul>-->
 			</div>
 
 			<div class="MLbox">
@@ -216,6 +219,10 @@
 
 					<li>
 						<a href="#" id="city" class="button" onclick="cityHandler();">城市统计</a>
+					</li>
+
+					<li>
+						<a href="#" id="recall" class="button" onclick="recallHandler();">消息撤回</a>
 					</li>
 				</div>
 

@@ -1,18 +1,19 @@
 # coding:utf-8
+#!D:\Anaconda2\py2.exe
 import itchat
 from itchat.content import TEXT
 from itchat.content import *
 import sys
 import time
 import re
-
+import codecs
 # reload(sys)
 # sys.setdefaultencoding('utf8')
 import os
 
 msg_information = {}
 face_bug = None  # 针对表情包的内容
-
+fw = codecs.open('recall.txt','a','utf-8')
 
 @itchat.msg_register([TEXT, PICTURE, FRIENDS, CARD,
                       MAP, SHARING, RECORDING, ATTACHMENT,
@@ -20,10 +21,8 @@ face_bug = None  # 针对表情包的内容
                      isMpChat=True)
 def handle_receive_msg(msg):
     global face_bug
-
     # 接受消息的时间
     msg_time_rec = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-
     # 在好友列表中查询发送信息的好友昵称
     msg_from = itchat.search_friends(userName=msg['FromUserName'])['NickName']
     msg_time = msg['CreateTime']  # 信息发送的时间
@@ -32,19 +31,16 @@ def handle_receive_msg(msg):
     msg_share_url = None  # 储存分享的链接，比如分享的文章和音乐
     print(msg['Type'])
     print(msg['MsgId'])
-
     # 如果发送的消息是文本或者好友推荐
     if msg['Type'] == 'Text' or msg['Type'] == 'Friends':
         msg_content = msg['Text']
         print(msg_content)
-
     # 如果发送的消息是附件、视屏、图片、语音
     elif msg['Type'] == "Attachment" or msg['Type'] == "Video" \
             or msg['Type'] == 'Picture' \
             or msg['Type'] == 'Recording':
         msg_content = msg['FileName']  # 内容就是他们的文件名
         msg['Text'](str(msg_content))  # 下载文件
-
     #将信息存储在字典中，每一个msg_id对应一条信息
     msg_information.update(
         {
@@ -57,7 +53,6 @@ def handle_receive_msg(msg):
         }
     )
 
-
 ##这个是用于监听是否有friend消息撤回
 @itchat.msg_register(NOTE, isFriendChat=True, isGroupChat=True, isMpChat=True)
 def information(msg):
@@ -65,7 +60,6 @@ def information(msg):
     if '撤回了一条消息' in msg['Content']:
         # 在返回的content查找撤回的消息的id
         old_msg_id = re.search("\<msgid\>(.*?)\<\/msgid\>", msg['Content']).group(1)
-
         # 得到消息
         old_msg = msg_information.get(old_msg_id)
         print(old_msg)
@@ -80,7 +74,9 @@ def information(msg):
             # 如果是分享的文件被撤回了，那么就将分享的url加在msg_body中发送给文件助手
             if old_msg['msg_type'] == "Sharing":
                 msg_body += "\n就是这个链接➣ " + old_msg.get('msg_share_url')
-
+            print(msg_body+'hhhhhh')
+            fw.write(msg_body+'\n')
+            fw.flush()
             # 将撤回消息发送到文件助手
             itchat.send_msg(msg_body, toUserName='filehelper')
             # 有文件的话也要将文件发送回去
@@ -100,7 +96,6 @@ def information(msg):
                       VIDEO], isGroupChat=True)
 def handle_receive_msg(msg):
     global face_bug
-
     # 接受消息的时间
     msg_time_rec = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     # groupid = msg['FromUserName']
@@ -115,12 +110,10 @@ def handle_receive_msg(msg):
     msg_share_url = None  # 储存分享的链接，比如分享的文章和音乐
     print(msg['Type'])
     print(msg['MsgId'])
-
     # 如果发送的消息是文本或者好友推荐
     if msg['Type'] == 'Text' or msg['Type'] == 'Friends':
         msg_content = msg['Text']
         print(msg_content)
-
     # 如果发送的消息是附件、视屏、图片、语音
     elif msg['Type'] == "Attachment" or msg['Type'] == "Video" \
             or msg['Type'] == 'Picture' \
@@ -129,14 +122,12 @@ def handle_receive_msg(msg):
         msg['Text'](str(msg_content))  # 下载文件
         # print msg_content
     elif msg['Type'] == 'Card':  # 如果消息是推荐的名片
-
         # 内容就是推荐人的昵称和性别
         msg_content = msg['RecommendInfo']['NickName'] + '的名片'
         if msg['RecommendInfo']['Sex'] == 1:
             msg_content += '性别为男'
         else:
             msg_content += '性别为女'
-
         print(msg_content)
     elif msg['Type'] == 'Map':  # 如果消息为分享的位置信息
         x, y, location = re.search(
@@ -153,7 +144,6 @@ def handle_receive_msg(msg):
         msg_share_url = msg['Url']  # 记录分享的url
         print(msg_share_url)
     face_bug = msg_content
-
     ##将信息存储在字典中，每一个msg_id对应一条信息
     msg_information.update(
         {
@@ -164,7 +154,6 @@ def handle_receive_msg(msg):
             }
         }
     )
-
 
 ##这个是用于监听是否有Group消息撤回
 @itchat.msg_register(NOTE, isGroupChat=True, isMpChat=True)
@@ -186,7 +175,8 @@ def information(msg):
             # 如果是分享的文件被撤回了，那么就将分享的url加在msg_body中发送给文件助手
             if old_msg['msg_type'] == "Sharing":
                 msg_body += "\n就是这个链接➣ " + old_msg.get('msg_share_url')
-
+            # 将撤回消息保存到文件中
+            fw.write(msg_body + '\n')
             # 将撤回消息发送到文件助手
             itchat.send_msg(msg_body, toUserName='filehelper')
             # 有文件的话也要将文件发送回去
@@ -195,6 +185,7 @@ def information(msg):
                     or old_msg["msg_type"] == "Video" \
                     or old_msg["msg_type"] == "Attachment":
                 file = '@fil@%s' % (old_msg['msg_content'])
+                fw.write(msg_body + '\n')
                 itchat.send(msg=file, toUserName='filehelper')
                 os.remove(old_msg['msg_content'])
             # 删除字典旧消息
